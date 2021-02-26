@@ -1,14 +1,6 @@
-#include <stdint.h>
 #include <cstddef>
-#include <malloc.h>
 
-void* Mem_Alloc(uint64_t size) {
-	return _aligned_malloc(size, 16);
-}
-
-void Mem_Free(void *ptr) {
-	return _aligned_free(ptr);
-}
+#include "memset.h"
 
 namespace {
 	uint64_t buffer_size;
@@ -17,7 +9,9 @@ namespace {
 }
 
 void Test_Init() {
-
+	buffer_size = uint64_t(1024) * 1024 * 512;
+	buffer_1 = (std::byte*)Mem_Alloc(buffer_size);
+	buffer_2 = (std::byte*)Mem_Alloc(buffer_size);
 }
 
 void Test_Run() {
@@ -25,10 +19,11 @@ void Test_Run() {
 }
 
 void Test_Shutdown() {
-
+	Mem_Free(buffer_2);
+	Mem_Free(buffer_1);
 }
 
-int main() {
+int main(int argc, char *argv[]) {
 	
 	Test_Init();	
 
