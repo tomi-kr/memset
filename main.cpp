@@ -3,6 +3,8 @@
 #include <memory>
 #include "memset.h"
 
+extern "C" int ASM_Test();
+
 namespace {
 	uint64_t buffer_size;
 	std::byte *buffer_1;
@@ -59,12 +61,16 @@ void Test_Shutdown() {
 
 int main(int argc, char *argv[]) {
 	
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 1; i++) {
 		Test_Init();	
 		Test_Run();
 		Test_Shutdown();
 	}
-		
+	
+	int i = ASM_Test();
+	printf("\n\nASM_Test is %d\n", i);
+
+
 	while (1) {
 		Sleep(50);
 	}
