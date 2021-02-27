@@ -8,6 +8,7 @@
 extern "C" int ASM_Test();
 
 namespace {
+	std::byte *whatever;
 	uint64_t buffer_size;
 	std::byte *buffer_1;
 	std::byte *buffer_2;
@@ -26,10 +27,12 @@ inline constexpr bool IsAligned(const void * ptr, std::uintptr_t alignment) noex
 }
 
 void Test_Init() {
-	buffer_size = uint64_t(1024) * 1024 * 512;
-	buffer_1 = (std::byte*)Mem_Alloc(buffer_size);
-	buffer_2 = (std::byte*)Mem_Alloc(buffer_size);
+	static_assert(__STDCPP_DEFAULT_NEW_ALIGNMENT__ == 16, "This is not going to work. Consider using Mem_Alloc/Mem_Free.");
 
+	buffer_size = uint64_t(1024) * 1024 * 512;
+	buffer_1 = new std::byte[buffer_size];
+	buffer_2 = new std::byte[buffer_size];
+	
 	AssertRelease(IsAligned(buffer_1, 16) == true, "Buffer1 is not aligned!");
 	AssertRelease(IsAligned(buffer_2, 16) == true, "Buffer2 is not aligned!");
 }
@@ -72,8 +75,8 @@ void Test_Run() {
 }
 
 void Test_Shutdown() {
-	Mem_Free(buffer_2);
-	Mem_Free(buffer_1);
+	delete [] buffer_1;
+	delete [] buffer_2;	
 }
 
 int main(int argc, char *argv[]) {
