@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <stdio.h>
 #include <memory>
+#include <string_view>
 #include "memset.h"
 #include "stopwatch.h"
 
@@ -12,23 +13,38 @@ namespace {
 	std::byte *buffer_2;
 }
 
+inline void AssertRelease(bool condition, std::string_view message) {
+	if (!condition) {
+		MessageBoxA(0, message.data(), "Error", MB_OK + MB_ICONERROR);
+		DebugBreak();
+	}
+}
+
+inline constexpr bool IsAligned(const void * ptr, std::uintptr_t alignment) noexcept {
+    std::uintptr_t address = (std::uintptr_t)ptr;
+    return !(address % alignment);
+}
+
 void Test_Init() {
 	buffer_size = uint64_t(1024) * 1024 * 512;
 	buffer_1 = (std::byte*)Mem_Alloc(buffer_size);
 	buffer_2 = (std::byte*)Mem_Alloc(buffer_size);
+
+	AssertRelease(IsAligned(buffer_1, 16) == true, "Buffer1 is not aligned!");
+	AssertRelease(IsAligned(buffer_2, 16) == true, "Buffer2 is not aligned!");
 }
 
 void Test_Run() {
 	std::memset(buffer_1, 9099, buffer_size);
 	std::memset(buffer_2, 9099, buffer_size);
 
-	double start1 = StopWatch::msec();
+	double start1 = StopWatch::MSec();
 	std::memset(buffer_1, 1, buffer_size);
-	double end1 = StopWatch::msec();
+	double end1 = StopWatch::MSec();
 
-	double start2 = StopWatch::msec();
+	double start2 = StopWatch::MSec();
 	Memset_SIMD(buffer_2, 1, buffer_size);
-	double end2 = StopWatch::msec();
+	double end2 = StopWatch::MSec();
 
 	if (std::memcmp(buffer_1, buffer_2, buffer_size) != 0) {
 		for (int i = 0; i < 10; i++) {
@@ -39,9 +55,9 @@ void Test_Run() {
 	// reset
 	std::memset(buffer_2, 9099, buffer_size);
 
-	double start3 = StopWatch::msec();
+	double start3 = StopWatch::MSec();
 	Memset_Manual(buffer_2, 1, buffer_size);
-	double end3 = StopWatch::msec();
+	double end3 = StopWatch::MSec();
 
 	if (std::memcmp(buffer_1, buffer_2, buffer_size) != 0) {
 		for (int i = 0; i < 10; i++) {
@@ -60,12 +76,15 @@ void Test_Shutdown() {
 	Mem_Free(buffer_1);
 }
 
-int main(int argc, char *argv[]) {	
-	for (int i = 0; i < 10; i++) {
-		Test_Init();	
-		Test_Run();
-		Test_Shutdown();
+int main(int argc, char *argv[]) {
+
+	Test_Init();
+	
+	for (int i = 0; i < 10; i++) {		
+		Test_Run();		
 	}
+	
+	Test_Shutdown();
 	
 	int i = ASM_Test();
 	printf("\n\nASM_Test is %d\n", i);

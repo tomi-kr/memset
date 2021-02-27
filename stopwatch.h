@@ -35,11 +35,11 @@ struct StopWatch {
         return &timer;
     }
 
-    static double msec() {
+    static double MSec() {
         return it()->GetTimeMs();
     }
 
-    static double microsec() {
+    static double USec() {
         return it()->GetTimeMicro();
     }
 };

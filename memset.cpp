@@ -10,8 +10,11 @@ void Mem_Free(void *ptr) {
 
 void Memset_SIMD(const void *start_address, int value, uint64_t length) {
     char c = (char)value;
-	volatile unsigned char *byte_buffer = (unsigned char *)start_address;
-    __m128i block = _mm_set_epi8(c,c,c,c, c,c,c,c, c,c,c,c, c,c,c,c);
+	unsigned char *byte_buffer = (unsigned char *)start_address;
+    __m128i block = _mm_set_epi8(c, c, c, c, 
+								 c, c, c, c,
+								 c, c, c, c, 
+								 c, c, c, c);
     
 	while (length >= 32) {
 		_mm_storeu_si128((__m128i*)&byte_buffer[0], block);
