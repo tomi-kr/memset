@@ -26,6 +26,9 @@
     <ClInclude Include="memset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="stopwatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="memset_asm.asm">

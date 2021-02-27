@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <memory>
 #include "memset.h"
+#include "stopwatch.h"
 
 extern "C" int ASM_Test();
 
@@ -59,9 +60,8 @@ void Test_Shutdown() {
 	Mem_Free(buffer_1);
 }
 
-int main(int argc, char *argv[]) {
-	
-	for (int i = 0; i < 1; i++) {
+int main(int argc, char *argv[]) {	
+	for (int i = 0; i < 10; i++) {
 		Test_Init();	
 		Test_Run();
 		Test_Shutdown();
@@ -69,7 +69,6 @@ int main(int argc, char *argv[]) {
 	
 	int i = ASM_Test();
 	printf("\n\nASM_Test is %d\n", i);
-
 
 	while (1) {
 		Sleep(50);

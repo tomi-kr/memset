@@ -125,6 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="memset.h" />
+    <ClInclude Include="stopwatch.h" />
   </ItemGroup>
   <ItemGroup>
     <MASM Include="memset_asm.asm" />

@@ -43,11 +43,22 @@ void Memset_Manual(const void *start_address, int value, uint64_t length) {
 	((unsigned char *)&storage)[6] = c;
 	((unsigned char *)&storage)[7] = c;
 
+
+#if 0
+	while (length >= 8) {
+		for (int i = 0; i < 8; i++) {
+			*long_pointer = storage;		
+			long_pointer++;
+			length -= 8;
+		}
+	}
+#else
 	while (length >= 8) {
 		*long_pointer = storage;		
 		long_pointer++;
         length -= 8;
 	}
+#endif
 
 	volatile unsigned char* byte_pointer = (unsigned char *)(long_pointer);
 	while (length > 0) {
