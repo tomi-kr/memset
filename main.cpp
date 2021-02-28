@@ -2,8 +2,13 @@
 #include <stdio.h>
 #include <memory>
 #include <string_view>
+#include <inttypes.h>
 #include "memset.h"
 #include "stopwatch.h"
+
+#if !_M_AMD64
+#error x64 or don't bother.
+#endif
 
 extern "C" int ASM_Test();
 
@@ -35,43 +40,66 @@ void Test_Init() {
 	
 	AssertRelease(IsAligned(buffer_1, 16) == true, "Buffer1 is not aligned!");
 	AssertRelease(IsAligned(buffer_2, 16) == true, "Buffer2 is not aligned!");
+
+	printf("buffer_size is %" PRIu64 " bytes\n", buffer_size);
 }
 
-void Test_Run() {
-	std::memset(buffer_1, 9099, buffer_size);
-	std::memset(buffer_2, 9099, buffer_size);
+void CheckBuffers(std::string_view name) {
+	if (std::memcmp(buffer_1, buffer_2, buffer_size) != 0) {
+		for (int i = 0; i < 10; i++) {
+			printf("********** %s is broken **********\n", name.data());
+		}
+	}
+}
 
+void Test_Run() {			
+	//
+	// Make sure these pages are in the working set.
+	//
+	std::memset(buffer_1, 1, buffer_size);
+	std::memset(buffer_2, 1, buffer_size);
+
+	//
+	// We will compare the other memsets against this (perf and correctnes.)
+	//
 	double start1 = StopWatch::MSec();
 	std::memset(buffer_1, 1, buffer_size);
 	double end1 = StopWatch::MSec();
 
+	//
+	// SIMD I: MOVDQA x 8
+	//
 	double start2 = StopWatch::MSec();
-	Memset_SIMD(buffer_2, 1, buffer_size);
+	Memset_SIMD_MOVDQA(buffer_2, 1, buffer_size);
 	double end2 = StopWatch::MSec();
 
-	if (std::memcmp(buffer_1, buffer_2, buffer_size) != 0) {
-		for (int i = 0; i < 10; i++) {
-			printf("********** Memset_SIMD is broken **********\n");
-		}
-	}
+	CheckBuffers("MOVDQA");
 
-	// reset
+	//
+	// SIMD II: MOVNTPS x 8
+	//
 	std::memset(buffer_2, 9099, buffer_size);
-
 	double start3 = StopWatch::MSec();
-	Memset_Manual(buffer_2, 1, buffer_size);
+	Memset_SIMD_MOVNTPS(buffer_2, 1, buffer_size);
 	double end3 = StopWatch::MSec();
 
-	if (std::memcmp(buffer_1, buffer_2, buffer_size) != 0) {
-		for (int i = 0; i < 10; i++) {
-			printf("********** Memset_Manual is broken **********\n");
-		}
-	}
+	CheckBuffers("MOVNTPS");
+
+	//
+	// Manual 64bit stores
+	//
+	std::memset(buffer_2, 9099, buffer_size);
+	double start4 = StopWatch::MSec();
+	Memset_8bytes(buffer_2, 1, buffer_size);
+	double end4 = StopWatch::MSec();
+
+	CheckBuffers("x64");
 
 	printf("\n");
-	printf("std::memset: %2.2f\n", end1 - start1);
-	printf("SIMD       : %2.2f\n", end2 - start2);
-	printf("Manual     : %2.2f\n", end3 - start3);
+	printf("std::memset        : %2.2f\n", end1 - start1);
+	printf("SIMD (MOVDQA)      : %2.2f\n", end2 - start2);	
+	printf("SIMD2 (MOVNTPS)    : %2.2f\n", end3 - start3);
+	printf("x64 (64bit stores) : %2.2f\n", end4 - start4);
 }
 
 void Test_Shutdown() {
@@ -80,7 +108,6 @@ void Test_Shutdown() {
 }
 
 int main(int argc, char *argv[]) {
-
 	Test_Init();
 	
 	for (int i = 0; i < 10; i++) {		
