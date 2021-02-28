@@ -52,7 +52,7 @@ void CheckBuffers(std::string_view name) {
 	}
 }
 
-void Test_Run() {			
+void Test_Run() {
 	//
 	// Make sure these pages are in the working set.
 	//
@@ -60,7 +60,7 @@ void Test_Run() {
 	std::memset(buffer_2, 1, buffer_size);
 
 	//
-	// We will compare the other memsets against this (perf and correctnes.)
+	// We will compare the other memsets against this (perf and correctness)
 	//
 	double start1 = StopWatch::MSec();
 	std::memset(buffer_1, 1, buffer_size);
@@ -107,6 +107,11 @@ void Test_Shutdown() {
 	delete [] buffer_2;	
 }
 
+void ASM_Code() {
+	int i = ASM_Test();
+	printf("\n\nASM_Test is %d\n", i);
+}
+
 int main(int argc, char *argv[]) {
 	Test_Init();
 	
@@ -115,9 +120,8 @@ int main(int argc, char *argv[]) {
 	}
 	
 	Test_Shutdown();
-	
-	int i = ASM_Test();
-	printf("\n\nASM_Test is %d\n", i);
+
+	ASM_Code();
 
 	while (1) {
 		Sleep(50);

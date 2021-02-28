@@ -74,7 +74,6 @@ void Memset_SIMD_MOVNTPS(const void *start_address, int value, uint64_t length) 
 
 void Memset_8bytes(const void *start_address, int value, uint64_t length) {
 	uint64_t* long_pointer = (uint64_t *)start_address;
-	//unsigned char* debug_pointer = (unsigned char *)(long_pointer);
 	unsigned char c		   = (unsigned char)value;
 	uint64_t storage;
 
