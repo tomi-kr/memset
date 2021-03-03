@@ -31,18 +31,6 @@ inline constexpr bool IsAligned(const void * ptr, std::uintptr_t alignment) noex
     return !(address % alignment);
 }
 
-void Test_Init() {
-	static_assert(__STDCPP_DEFAULT_NEW_ALIGNMENT__ == 16, "This is not going to work. Consider using Mem_Alloc/Mem_Free.");
-
-	buffer_size = uint64_t(1024) * 1024 * 512;
-	buffer_1 = new std::byte[buffer_size];
-	buffer_2 = new std::byte[buffer_size];
-	
-	AssertRelease(IsAligned(buffer_1, 16) == true, "Buffer1 is not aligned!");
-	AssertRelease(IsAligned(buffer_2, 16) == true, "Buffer2 is not aligned!");
-
-	printf("buffer_size is %" PRIu64 " bytes\n", buffer_size);
-}
 
 void CheckBuffers(std::string_view name) {
 	if (std::memcmp(buffer_1, buffer_2, buffer_size) != 0) {
@@ -102,24 +90,41 @@ void Test_Run() {
 	printf("x64 (64bit stores) : %2.2f\n", end4 - start4);
 }
 
-void Test_Shutdown() {
-	delete [] buffer_1;
-	delete [] buffer_2;	
-}
-
 void ASM_Code() {
 	int i = ASM_Test();
 	printf("\n\nASM_Test is %d\n", i);
 }
 
-int main(int argc, char *argv[]) {
-	Test_Init();
+void Test_1() {
+	static_assert(__STDCPP_DEFAULT_NEW_ALIGNMENT__ == 16, "This is not going to work. Consider using Mem_Alloc/Mem_Free.");
+
+	buffer_size = uint64_t(1024) * 1024 * 512;
+	buffer_1 = new std::byte[buffer_size];
+	buffer_2 = new std::byte[buffer_size];
+	
+	AssertRelease(IsAligned(buffer_1, 16) == true, "Buffer1 is not aligned!");
+	AssertRelease(IsAligned(buffer_2, 16) == true, "Buffer2 is not aligned!");
+
+	printf("buffer_size is %" PRIu64 " bytes\n", buffer_size);
+
 	
 	for (int i = 0; i < 10; i++) {		
 		Test_Run();		
 	}
 	
-	Test_Shutdown();
+	delete [] buffer_1;
+	delete [] buffer_2;	
+}
+
+void Test_2() {
+	while (1) {
+		
+	}
+}
+
+int main(int argc, char *argv[]) {
+
+	Test_1();
 
 	ASM_Code();
 

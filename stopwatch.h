@@ -18,28 +18,28 @@ struct StopWatch {
         QueryPerformanceCounter(&StartingTime);
     }
 
-    double GetTimeMs() {
+    inline double GetTimeMs() {
         LARGE_INTEGER EndingTime;
         QueryPerformanceCounter(&EndingTime);
         return ((double(EndingTime.QuadPart - StartingTime.QuadPart) * 1000.0) / Frequency);
     }
 
-    double GetTimeMicro() {
+    inline double GetTimeMicro() {
         LARGE_INTEGER EndingTime;
         QueryPerformanceCounter(&EndingTime);
         return ((double(EndingTime.QuadPart - StartingTime.QuadPart) * 1000000.0) / Frequency);
     }
 
-    static StopWatch *it() {
+    static inline StopWatch *it() {
         static StopWatch timer;
         return &timer;
     }
 
-    static double MSec() {
+    static inline double MSec() {
         return it()->GetTimeMs();
     }
 
-    static double USec() {
+    static inline double USec() {
         return it()->GetTimeMicro();
     }
 };
