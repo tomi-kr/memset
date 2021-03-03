@@ -85,7 +85,7 @@ void Memset_SIMD_MOVNTPS(const void *start_address, int value, uint64_t length) 
 		_mm_stream_ps(float_buffer +  0,  vector);
 		_mm_stream_ps(float_buffer +  4,  vector);
 		_mm_stream_ps(float_buffer +  8,  vector);
-		_mm_stream_ps(float_buffer + 12, vector);		
+		_mm_stream_ps(float_buffer + 12, vector);
 		/*_mm_stream_ps(float_buffer + 16, vector);
 		_mm_stream_ps(float_buffer + 20, vector);
 		_mm_stream_ps(float_buffer + 24, vector);
