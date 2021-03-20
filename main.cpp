@@ -3,6 +3,10 @@
 #include <memory>
 #include <string_view>
 #include <inttypes.h>
+#include <vector>
+#include <atomic>
+#include <thread>
+#include <iostream>
 #include "memset.h"
 #include "stopwatch.h"
 
@@ -62,6 +66,7 @@ void Test_Run() {
 	double end2 = StopWatch::MSec();
 
 	CheckBuffers("MOVDQA");
+	
 
 	//
 	// SIMD II: MOVNTPS x 8
@@ -73,6 +78,7 @@ void Test_Run() {
 
 	CheckBuffers("MOVNTPS");
 
+	
 	//
 	// Manual 64bit stores
 	//
@@ -96,9 +102,13 @@ void ASM_Code() {
 }
 
 void Test_1() {
+	printf("\n");
+	printf("	Starting Test 1\n");
+	printf("\n");
+
 	static_assert(__STDCPP_DEFAULT_NEW_ALIGNMENT__ == 16, "This is not going to work. Consider using Mem_Alloc/Mem_Free.");
 
-	buffer_size = uint64_t(1024) * 1024 * 512;
+	buffer_size = (uint64_t(1024) * 1024 * 512);
 	buffer_1 = new std::byte[buffer_size];
 	buffer_2 = new std::byte[buffer_size];
 	
@@ -106,25 +116,35 @@ void Test_1() {
 	AssertRelease(IsAligned(buffer_2, 16) == true, "Buffer2 is not aligned!");
 
 	printf("buffer_size is %" PRIu64 " bytes\n", buffer_size);
-
 	
-	for (int i = 0; i < 10; i++) {		
+	for (int i = 0; i < 1; i++) {
 		Test_Run();		
 	}
 	
 	delete [] buffer_1;
 	delete [] buffer_2;	
+
+	printf("\n");
+	printf("===============================\n");
+	printf("\n");
 }
 
+
 void Test_2() {
-	while (1) {
-		
-	}
+	printf("\n");
+	printf("	Starting Test 2\n");
+	printf("\n");
+
+
+	printf("\n");
+	printf("===============================\n");
+	printf("\n");
 }
 
 int main(int argc, char *argv[]) {
-
 	Test_1();
+	
+	Test_2();
 
 	ASM_Code();
 

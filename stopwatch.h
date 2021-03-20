@@ -11,7 +11,7 @@ struct StopWatch {
 		Reset();
     }
 
-    void Reset() {
+    inline void Reset() {
         LARGE_INTEGER freq;
         QueryPerformanceFrequency(&freq);
         Frequency = double(freq.QuadPart);

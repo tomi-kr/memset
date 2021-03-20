@@ -1,12 +1,24 @@
+.data
+
+mybyte byte 35
+myword word ?
+myfloat real4 77.2
+
+what qword 9
+
 .code
 ASM_Test proc	
+	mov what, 999	
 
-	mov r11, -1	
-	mov r11b, 5
-	mov r11w, 17
-	mov r11d, -1
+	lea r12, what
 
-	mov rax, 999
+	mov qword ptr[r12], 2021
+
+	mov rax, what
+	mov rax, rax
+	mov al, al
+	nop 
+
 	ret
 ASM_Test endp
 end

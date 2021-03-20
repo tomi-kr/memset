@@ -81,18 +81,18 @@ void Memset_SIMD_MOVNTPS(const void *start_address, int value, uint64_t length) 
 	__m128 vector = _mm_set_ps1(*(float*)block);
 
     
-	while (length >= 64) {
+	while (length >= 128) {
 		_mm_stream_ps(float_buffer +  0,  vector);
 		_mm_stream_ps(float_buffer +  4,  vector);
 		_mm_stream_ps(float_buffer +  8,  vector);
 		_mm_stream_ps(float_buffer + 12, vector);
-		/*_mm_stream_ps(float_buffer + 16, vector);
+		_mm_stream_ps(float_buffer + 16, vector);
 		_mm_stream_ps(float_buffer + 20, vector);
 		_mm_stream_ps(float_buffer + 24, vector);
-		_mm_stream_ps(float_buffer + 28, vector);*/
+		_mm_stream_ps(float_buffer + 28, vector);
 
-		float_buffer += 16;
-		length -= 64;
+		float_buffer += 32; // 32
+		length -= 128;
 	}
 
 	volatile unsigned char * byte_buffer = (unsigned char*)float_buffer;
